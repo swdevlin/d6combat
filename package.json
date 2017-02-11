@@ -1,0 +1,13 @@
+{
+  "name": "d6 Combat",
+  "description": "d6 Combat for Ars Magica",
+  "version": "0.1.0",
+  "author": "Shawn W. Devlin",
+  "main": "d6.js",
+  "private": false,
+  "scripts": {
+    "test": "jasmine"
+  },
+  "dependencies": {
+  }
+}
