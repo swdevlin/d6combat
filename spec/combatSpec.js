@@ -95,6 +95,7 @@ describe("d6 spec suite", function() {
     expect(results[combat.BOTCH + combat.BLOCK]).toBe(2);
   });
 
+
   it('faceMatches test', function() {
     var roll = combat.NEUTRAL_CRIT + combat.DOUBLE_STRIKE + combat.NEUTRAL_CRIT + combat.STRIKE + combat.STRIKE + combat.STRIKE;
 

@@ -3,3 +3,6 @@ output
 *.swp
 node_modules
 node_modules/*
+/coverage/
+/.nyc_output/
+/.idea/
