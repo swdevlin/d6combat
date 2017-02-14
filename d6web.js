@@ -19,7 +19,7 @@ function htmlForDie(name, die, id) {
   html += '<div class="col-sm-8">';
   for (var i in die) {
     html += '<div class="die ';
-    if (i == 0 && die[i] != '')
+    if (die[i] == 'B')
       html += 'botch ';
     if (i == die.length - 1 && die[i] != '')
       html += 'crit ';
@@ -111,7 +111,7 @@ function netResultMarkup(player) {
         botchesToDisplay--;
         html += dieHTML(player.rolls[i], '', i)
       }
-  for (var i in player.rolls)
+  for (i in player.rolls)
     if (rollCanBeDisplayed(player.rolls[i]))
       html += dieHTML(player.rolls[i], '', i);
   return html;
@@ -168,10 +168,8 @@ function botchesOk(player) {
     return false;
   else if (player.crits > player.disabledCrits && player.botches > player.disabledCrits)
     return false;
-  else if (player.disabledCrits + player.disabled >= player.botches)
-    return true;
   else
-    return false;
+    return player.disabledCrits + player.disabled >= player.botches;
 }
 
 function dropsOk(player) {
@@ -179,21 +177,19 @@ function dropsOk(player) {
     return true;
   if (player.drops <= player.disabled)
     return true;
-  if (player.dice > player.disabled)
-    return false;
-  return true;
+  return !(player.dice > player.disabled);
 }
 
 function isDie(face) {
   if (face == '')
     return 0;
-  else if (face == 4)
+  if (face == 4)
     return 1;
-  else if (face == face.toUpperCase())
+  if (face == face.toUpperCase())
     return 0;
-  else if (face == '-')
+  if (face == '-')
     return 0;
-  else if (face == ' ')
+  if (face == ' ')
     return 0;
   else
     return 1;
