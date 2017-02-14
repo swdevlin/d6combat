@@ -629,7 +629,6 @@ describe('html markup for remaining dice', function() {
         {enabled: false, isBotch: false, isCrit: false, isDrop: false, result: '4', roll: 4, type: 'offensive'}
       ]
     };
-    var expected = dieHTML(player.rolls[1], '', 1) + dieHTML(player.rolls[3], '', 3);
     var html = netResultMarkup(player);
     expect(html).toBe('');
   });
