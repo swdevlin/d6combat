@@ -325,6 +325,8 @@ describe("d6 Web UI", function() {
     expect(die).toBe(1);
     die = isDie('s');
     expect(die).toBe(1);
+    die = isDie('4');
+    expect(die).toBe(1);
   });
 });
 
@@ -450,6 +452,32 @@ describe('rollStatus indicates what the player must do', function() {
     expect(message).toEqual('');
   });
 
+  it("Two botches, a drop, and a regular die", function() {
+    var player = {
+      dice: 1,
+      crits: 0,
+      drops: 1,
+      botches: 2,
+      disabled: 0,
+      disabledCrits: 0
+    };
+    var message = rollStatus(player);
+    expect(message).toEqual('1 die needs to be dropped');
+  });
+
+  it("2 botches, 2 drops, 1 regular, 2 disabled regular", function() {
+    var player = {
+      dice: 3,
+      crits: 0,
+      drops: 2,
+      botches: 2,
+      disabled: 2,
+      disabledCrits: 0
+    };
+    var message = rollStatus(player);
+    expect(message).toEqual('1 die needs to be dropped');
+  });
+
   it("More botches than disabled dice is no message", function() {
     var player = {
       dice: 0,
@@ -547,6 +575,84 @@ describe('rollStatus indicates what the player must do', function() {
     message = rollStatus(player);
     expect(message).toEqual('');
 
+  });
+
+});
+
+describe('rules for which dice can be displayed', function() {
+  it('botch dice are not displayed', function() {
+    var roll = createDieRoll(NEUTRAL_DIE, 'neutral', 1);
+    var display = rollCanBeDisplayed(roll);
+    expect(display).toBe(false);
+  });
+
+  it('enabled dice are displayed', function() {
+    var roll = createDieRoll(NEUTRAL_DIE, 'neutral', 2);
+    var display = rollCanBeDisplayed(roll);
+    expect(display).toBe(true);
+  });
+
+  it('disabled dice are not displayed', function() {
+    var roll = createDieRoll(NEUTRAL_DIE, 'neutral', 2);
+    roll.enabled = false;
+    var display = rollCanBeDisplayed(roll);
+    expect(display).toBe(false);
+  });
+
+  it('drop dice are not displayed', function() {
+    var roll = createDieRoll(WOUND_DIE, 'wound', 2);
+    var display = rollCanBeDisplayed(roll);
+    expect(display).toBe(false);
+  });
+
+  it('blank dice are not displayed', function() {
+    var roll = createDieRoll(WOUND_DIE, 'wound', 4);
+    var display = rollCanBeDisplayed(roll);
+    expect(display).toBe(false);
+  });
+
+});
+
+describe('html markup for remaining dice', function() {
+  it('No dice is a blank string', function() {
+    var player = {
+      drops: 0,
+      disabled: 1,
+      dice: 1,
+      crits: 1,
+      botches: 2,
+      disabledCrits: 1,
+      rolls: [
+        {enabled: false, isBotch: false, isCrit: true, isDrop: false, result: 'S', roll: 6, type: 'offensive'},
+        {enabled: true, isBotch: true, isCrit: false, isDrop: false, result: 'S', roll: 1, type: 'offensive'},
+        {enabled: true, isBotch: true, isCrit: false, isDrop: false, result: 'B', roll: 1, type: 'offensive'},
+        {enabled: false, isBotch: false, isCrit: false, isDrop: false, result: '4', roll: 4, type: 'offensive'}
+      ]
+    };
+    var expected = dieHTML(player.rolls[1], '', 1) + dieHTML(player.rolls[3], '', 3);
+    var html = netResultMarkup(player);
+    expect(html).toBe('');
+  });
+
+  it('Remaining botch dice are displayed', function() {
+    var player = {
+      drops: 0,
+      disabled: 1,
+      dice: 1,
+      crits: 1,
+      botches: 3,
+      disabledCrits: 1,
+      rolls: [
+        {enabled: false, isBotch: false, isCrit: true, isDrop: false, result: 'S', roll: 6, type: 'offensive'},
+        {enabled: true, isBotch: true, isCrit: false, isDrop: false, result: 'S', roll: 1, type: 'offensive'},
+        {enabled: true, isBotch: true, isCrit: false, isDrop: false, result: 'B', roll: 1, type: 'offensive'},
+        {enabled: false, isBotch: false, isCrit: false, isDrop: false, result: '4', roll: 4, type: 'offensive'},
+        {enabled: true, isBotch: true, isCrit: false, isDrop: false, result: 'B', roll: 1, type: 'offensive'}
+      ]
+    };
+    var expected = dieHTML(player.rolls[1], '', 1);
+    var html = netResultMarkup(player);
+    expect(html).toBe(expected);
   });
 
 });

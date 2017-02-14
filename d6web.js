@@ -102,12 +102,29 @@ function rollStatus(player) {
   return status;
  }
 
+function netResultMarkup(player) {
+  var html = '';
+  var botchesToDisplay = player.botches - (player.disabled + player.disabledCrits - player.drops);
+  if (botchesToDisplay > 0)
+    for (var i in player.rolls)
+      if (player.rolls[i].isBotch && botchesToDisplay > 0) {
+        botchesToDisplay--;
+        html += dieHTML(player.rolls[i], '', i)
+      }
+  for (var i in player.rolls)
+    if (rollCanBeDisplayed(player.rolls[i]))
+      html += dieHTML(player.rolls[i], '', i);
+  return html;
+}
+
 function rollCanBeDisplayed(roll) {
   if (!roll.enabled)
     return false;
   else if (roll.result == '•')
     return false;
   else if (roll.result == '')
+    return false;
+  else if (roll.result == ' ')
     return false;
   else if (roll.isBotch)
     return false;
@@ -170,6 +187,8 @@ function dropsOk(player) {
 function isDie(face) {
   if (face == '')
     return 0;
+  else if (face == 4)
+    return 1;
   else if (face == face.toUpperCase())
     return 0;
   else if (face == '-')

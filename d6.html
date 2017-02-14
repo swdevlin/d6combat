@@ -92,13 +92,13 @@
     <p>For a maneuver to succeed you must have accumulated the require maneuver points. A maneuver point automatically grants a maneuver.</p>
     <h3>Legend</h3>
 <span style="font-size:14px;"><strong>B</strong></span>: Botch<br />
-<span style="font-size:14px;"><strong>d</strong></span>: Block a strike<br />
-<span style="font-size:14px;"><strong>s</strong></span>: Strike, does 1 damage<br />
-<span style="font-size:14px;"><strong>S</strong></span>: Critical, 2 strikes gets through even if opponent blocked<br />
-<span style="font-size:14px;"><strong>D</strong></span>: All attacks are blocked<br />
+<span style="font-size:14px;"><strong>d</strong></span>: Block 2 strike successes<br />
+<span style="font-size:14px;"><strong>s</strong></span>: Strike for 2 successes<br />
+<span style="font-size:14px;"><strong>S</strong></span>: Critical, 3 successes + an open d6 roll<br />
+<span style="font-size:14px;"><strong>D</strong></span>: Critical, all successes by a single opponent are blocked<br />
 <span style="font-size:14px;"><strong>-</strong></span>: Remove one die from your pool<br />
-<span style="font-size:14px;"><strong>N</strong></span>: No effect but can be used to cancel a botch or a drop die<br />
-<span style="font-size:14px;"><strong>4</strong></span>: Strike does 4 damage, or block prevents 4 damage<br />
+<span style="font-size:14px;"><strong>N</strong></span>: Critical, 2 strikes or 2 blocks<br />
+<span style="font-size:14px;"><strong>4</strong></span>: Strike for 4 successes, or block prevents 4 successes<br />
     </div>
   </div>
   <script src="d6web.js"></script>
@@ -108,7 +108,6 @@
       var p = index-1;
       var pstring = '#p'+index;
       players[p].rolls = [];
-//      rollForPlayer(index);
       var d = parseInt($(pstring + 'Neutral').val());
 
       for (var i=0; i< d; i++) {
@@ -166,13 +165,11 @@
 
       var message = rollStatus(player);
       console.log(player);
+      console.log(message);
       $(statusId).html(message);
-      console.log(player);
       var html = '<h3>Net Result</h3>';
       if (message.length == 0)
-        for (var i in player.rolls)
-          if (rollCanBeDisplayed(player.rolls[i]))
-            html += dieHTML(player.rolls[i], '', i);
+        html += netResultMarkup(player);
       html += '<div style="clear:both"></div>';
       $(netId).html(html);
     }
