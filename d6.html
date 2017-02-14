@@ -61,8 +61,6 @@
           <div id="p1en" class="form-group"></div>
           <div id="p1eo" class="form-group"></div>
           <div id="p1ed" class="form-group"></div>
-          <div id="p1eh" class="form-group"></div>
-          <div id="p1em" class="form-group"></div>
           <div id="p1ew" class="form-group"></div>
           <div id="p1ef" class="form-group"></div>
           <div class="form-group">
@@ -78,14 +76,14 @@
     </div>
     <div class="row">
     <hr/>
-    <p>Enter the number of each die you want to roll. Number of dice in the pool is equal to skill + Dexterity; a typical 
-    soldier will have 7 dice. Click the roll button.</p> 
+    <p>Enter the number of each die you want to roll. Number of dice in the pool is equal to skill + Dexterity; a typical
+    soldier will have 7 dice. Click the roll button.</p>
     <p><b>Raw Rolls</b> shows what was rolled. You will need to remove dice (click on the die in the raw rolls section to toggle include/exclude) from your roll in the following order:</p>
     <ul>
     <li>Blank dice are ignored; the system will do this for you automatically</li>
     <li>You must remove a non-blank, non-minus die for every minus die you roll.</li>
-    <li>You must remove a critical die (<b>θ!@4Щ</b>) for every botch (<b>ß</b>) you roll.</li> 
-    <li>If you have botches (<b>ß</b>) left over then you must remove non-critical dice.</li> 
+    <li>You must remove a critical die (<b>NDS</b>) for every botch (<b>B</b>) you roll.</li>
+    <li>If you have botches (<b>B</b>) left over then you must remove non-critical dice.</li>
     </ul>
     <p>Once dice are correctly removed from your roll the final results will be displayed in the Net Results section.
     Your Net Results are compared to your opponent's Net Results. Critical Success dice cancel each other out, so either there is no critical
@@ -93,192 +91,69 @@
     </p>
     <p>For a maneuver to succeed you must have accumulated the require maneuver points. A maneuver point automatically grants a maneuver.</p>
     <h3>Legend</h3>
-<span style="font-size:14px;"><strong>ß</strong></span>: Botch<br />
+<span style="font-size:14px;"><strong>B</strong></span>: Botch<br />
 <span style="font-size:14px;"><strong>d</strong></span>: Block a strike<br />
 <span style="font-size:14px;"><strong>s</strong></span>: Strike, does 1 damage<br />
-<span style="font-size:14px;"><strong>!</strong></span>: Critical, 2 strikes gets through even if opponent blocked<br />
-<span style="font-size:14px;"><strong>@</strong></span>: All attacks are blocked<br />
+<span style="font-size:14px;"><strong>S</strong></span>: Critical, 2 strikes gets through even if opponent blocked<br />
+<span style="font-size:14px;"><strong>D</strong></span>: All attacks are blocked<br />
 <span style="font-size:14px;"><strong>-</strong></span>: Remove one die from your pool<br />
-<span style="font-size:14px;"><strong>θ</strong></span>: No effect but can be used to cancel a botch or a drop die<br />
-<span style="font-size:14px;"><strong>2</strong></span>: Strike does 2 damage, must hit without this roll<br />
-<span style="font-size:14px;"><strong>4</strong></span>: Strike does 4 damage, must hit without this roll<br />
-<span style="font-size:14px;"><strong>m</strong></span>: 1 maneuver success<br />
-<span style="font-size:14px;"><strong>M</strong></span>: 2 maneuver successes<br />
-<span style="font-size:14px;"><strong>Щ</strong></span>: Maneuver critial; maneuver can be attempted<br />
+<span style="font-size:14px;"><strong>N</strong></span>: No effect but can be used to cancel a botch or a drop die<br />
+<span style="font-size:14px;"><strong>4</strong></span>: Strike does 4 damage, or block prevents 4 damage<br />
     </div>
   </div>
+  <script src="d6web.js"></script>
   <script type="text/javascript">
-    var neutralDie =  ['ß','d','d','s','s','θ'];
-    var offenseDie =  ['ß','', '', 's','s','!'];
-    var defenseDie =  ['ß','', '', 'd','d','@'];
-    var powerDie =    ['ß','', '', '2','2','4'];
-    var maneuverDie = ['ß','-','', 'm','M','Щ'];
-    var reflexDie =   ['ß','', '', '', '', 'Я'];
-    var woundDie =    ['ß','-','-','', '', ''];
-    var fatigueDie =  ['', '-','', '', '', ''];
-    var dieSize = neutralDie.length;
-    
-    function getRandomInt(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-
-    function htmlForDie(name, die, id) {
-      var html = '';
-      html += '<label for="p' + id + name + '" class="col-sm-2 control-label">' + name + '</label>';
-      html += '<div class="col-sm-2">';
-      html += '<input type="number" min="0" class="form-control" id="p' + id + name + '" value="0">';
-      html += '</div>';
-      html += '<div class="col-sm-8">';
-      for (var i in die) {
-        html += '<div class="die ';
-        if (i == 0 && die[i] != '')
-          html += 'botch ';
-        if (i == die.length - 1 && die[i] != '')
-          html += 'crit ';
-        html += name.toLowerCase() + '">' + die[i] + '</div>';
-      }
-      html += '</div>';
-      return html;
-    }
-    
-    var players = new Array(
-      {
-        disabledCrits: 0,
-        crits: 0,
-        botches: 0,
-        drops: 0,
-        disabled: 0,
-        cancelBotches: 0,
-        rolls: [],
-        dice: 0
-      }
-    );
 
     function rollForPlayer(index) {
       var p = index-1;
-      players[p].rolls = [];
       var pstring = '#p'+index;
+      players[p].rolls = [];
+//      rollForPlayer(index);
       var d = parseInt($(pstring + 'Neutral').val());
+
       for (var i=0; i< d; i++) {
         var roll = getRandomInt(1,dieSize);
-        var die = {
-          'type': 'neutral',
-          'roll': roll,
-          'result': neutralDie[roll-1],
-          'isCrit': false,
-          'cancelBotches': roll == 6,
-          'isBotch': roll == 1,
-          'enabled': true,
-          'isDrop': neutralDie[roll-1] == '-'
-        };
+        var die = createDieRoll(NEUTRAL_DIE, 'neutral', roll);
         players[p].rolls.push(die);
       }
 
       d = parseInt($(pstring + 'Offensive').val());
-      for (var i=0; i< d; i++) {
-        var roll = getRandomInt(1,dieSize);  
-        var die = {
-          'type': 'offensive',
-          'roll': roll,
-          'result': offenseDie[roll-1],
-          'isCrit': roll == dieSize,
-          'cancelBotches': false,
-          'isBotch': roll == 1,
-          'enabled': true,
-          'isDrop': offenseDie[roll-1] == '-'
-        };
-        players[p].rolls.push(die);
-      }
-      
-      d = parseInt($(pstring + 'Maneuver').val());
-      for (var i=0; i< d; i++) {
+      for (i=0; i< d; i++) {
         var roll = getRandomInt(1,dieSize);
-        var die = {
-          'type': 'maneuver',
-          'roll': roll,
-          'result': maneuverDie[roll-1],
-          'cancelBotches': false,
-          'isCrit': roll == dieSize,
-          'isBotch': roll == 1,
-          'enabled': true,
-          'isDrop': maneuverDie[roll-1] == '-'
-        };
-        players[p].rolls.push(die);
-      }
-      
-      d = parseInt($(pstring + 'Defensive').val());
-      for (var i=0; i< d; i++) {
-        var roll = getRandomInt(1,dieSize);  
-        var die = {
-          'type': 'defensive',
-          'roll': roll,
-          'result': defenseDie[roll-1],
-          'cancelBotches': false,
-          'isCrit': roll == dieSize,
-          'isBotch': roll == 1,
-          'enabled': true,
-          'isDrop': defenseDie[roll-1] == '-'
-        };
+        var die = createDieRoll(OFFENSE_DIE, 'offensive', roll);
         players[p].rolls.push(die);
       }
 
-      d = parseInt($(pstring + 'Power').val());
-      for (var i=0; i< d; i++) {
-        var roll = getRandomInt(1,dieSize);  
-        var die = {
-          'type': 'power',
-          'roll': roll,
-          'result': powerDie[roll-1],
-          'cancelBotches': false,
-          'isCrit': roll ==dieSize,
-          'isBotch': roll == 1,
-          'enabled': true,
-          'isDrop': powerDie[roll-1] == '-'
-        };
+      d = parseInt($(pstring + 'Defensive').val());
+      for (i=0; i< d; i++) {
+        var roll = getRandomInt(1,dieSize);
+        var die = createDieRoll(DEFENSE_DIE, 'defensive', roll);
         players[p].rolls.push(die);
       }
-      
+
       d = parseInt($(pstring + 'Wound').val());
-      for (var i=0; i< d; i++) {
+      for (i=0; i< d; i++) {
         var roll = getRandomInt(1,dieSize);
-        var die = {
-          'type': 'wound',
-          'roll': roll,
-          'result': woundDie[roll-1],
-          'cancelBotches': false,
-          'isCrit': false,
-          'isBotch': roll == 1,
-          'enabled': true,
-          'isDrop': woundDie[roll-1] == '-'
-        };
+        var die = createDieRoll(WOUND_DIE, 'wound', roll);
         players[p].rolls.push(die);
       }
 
       d = parseInt($(pstring + 'Fatigue').val());
-      for (var i=0; i< d; i++) {
+      for (i=0; i< d; i++) {
         var roll = getRandomInt(1,dieSize);
-        var die = {
-          'type': 'fatigue',
-          'roll': roll,
-          'result': woundDie[roll-1],
-          'cancelBotches': false,
-          'isCrit': false,
-          'isBotch': false,
-          'enabled': true,
-          'isDrop': woundDie[roll-1] == '-'
-        };
+        var die = createDieRoll(FATIGUE_DIE, 'fatigue', roll);
         players[p].rolls.push(die);
       }
-      
+
       var html = '<h3>Raw Rolls</h3>';
-      for (var i in players[p].rolls) {
+      for (i in players[p].rolls) {
         var id = pstring + 'roll' + i;
         html += dieHTML(players[p].rolls[i], id, i);
       }
       html += '<div style="clear: both"></div>';
-      $(pstring + 'rolls').html(html);  
+      $(pstring + 'rolls').html(html);
     }
-    
+
     function p1roll(e) {
       e.preventDefault();
       rollForPlayer(1);
@@ -289,113 +164,19 @@
       var statusId = '#p' + index + 'status';
       var netId = '#p' + index + 'net';
 
+      var message = rollStatus(player);
+      console.log(player);
+      $(statusId).html(message);
+      console.log(player);
       var html = '<h3>Net Result</h3>';
-
-      var activeDrops = player.drops > 0 ? player.drops - player.disabled : 0;
-      if (activeDrops < 0)
-        activeDrops = 0;
-      else if (activeDrops > player.dice - player.disabled)
-        activeDrops = 0;
-
-      var netBotches = player.botches > 0 ? player.botches - (player.disabled - player.drops) : 0;
-      if (netBotches > player.botches)
-        netBotches = player.botches;
-      netBotches -= player.cancelBotches;
-      if (netBotches < 0)
-        netBotches = 0;
-
-        var activeDice = player.dice - player.disabled;
-      if (activeDrops > 0)
-        $(statusId).html(activeDrops + ' dice need to be dropped');
-      else if (netBotches > 0) {
-        if (player.crits - player.disabledCrits > 0)
-          $(statusId).html(netBotches + ' crits need to be dropped');
-        else {
-          if (activeDice > 0)
-            $(statusId).html(netBotches + ' dice need to be dropped');
-          else
-            $(statusId).html('');
-        }
-      } else
-        $(statusId).html('');
-      
-      if (activeDice > 0 && (netBotches > 0 || activeDrops > 0)) {
-        if (netBotches > 0)
-          html += "<div>" + netBotches + " botch</div>";
-        else if (activeDrops > 0)
-          html += "<div>Need to drop " + activeDrops + " dice</div>";
-      } else if (netBotches > 0) {
-        html += "<div>" + netBotches + " botch</div>";
-      } else {
+      if (message.length == 0)
         for (var i in player.rolls)
           if (rollCanBeDisplayed(player.rolls[i]))
             html += dieHTML(player.rolls[i], '', i);
-      }
       html += '<div style="clear:both"></div>';
-      $(netId).html(html);  
+      $(netId).html(html);
     }
 
-    function rollCanBeDisplayed(roll) {
-      if (!roll.enabled)
-        return false;
-      if (roll.result == '•')
-        return false;
-      if (roll.cancelBotches)
-        return false;
-      if (roll.result == '')
-        return false;
-      if (roll.isBotch)
-        return false;
-      if (roll.isDrop)
-        return false;
-      return true;
-    }
-    
-    function dieHTML(die, id, i) {
-      var html = '<div data-roll="' + i + '"';
-      if (id != '')
-        html += ' id="'+ id + '"';
-      html += ' class="die ' + die.type;
-      if (die.isBotch)
-        html += ' botch';
-      if (die.isCrit)
-        html += ' crit';
-      if (die.result == '')
-          html += ' disabled';
-      html += '">' + die.result + '</div>';
-      return html;
-    }
-
-    function botchesOk(player) {
-      if (player.botches == 0)
-        return true;
-      if (player.disabledCrits < player.botches && player.crits > player.disabledCrits)
-        return false;
-      return true;
-    }
-
-    function dropsOk(player) {
-      if (player.drops == 0)
-        return true;
-      if (player.drops <= player.disabled)
-        return true;  
-      if (player.dice > player.disabled)
-        return false;
-      return true;
-    }
-
-    function isDie(face) {
-      if (face == '')
-        return 0;
-      if (face == 'ß')
-        return 0;
-      if (face == 'θ')
-        return 0;
-      if (face == '-')
-        return 0;
-      return 1;
-    }
-    
     function checkStatus(index) {
       var p = index-1;
       players[p].disabledCrits = 0;
@@ -404,21 +185,20 @@
       players[p].drops = 0;
       players[p].disabled = 0;
       players[p].dice = 0;
-      players[p].cancelBotches = 0;
       for (var i in players[p].rolls) {
         if (players[p].rolls[i].isCrit) {
           players[p].crits += 1;
           if (!players[p].rolls[i].enabled)
             players[p].disabledCrits += 1;
-        }
-        if (players[p].rolls[i].cancelBotches)
-          players[p].cancelBotches += 1;
+        } else if (!players[p].rolls[i].enabled)
+          players[p].disabled += 1;
+
         if (players[p].rolls[i].isBotch)
           players[p].botches += 1;
+
         if (players[p].rolls[i].isDrop)
           players[p].drops += 1;
-        if (!players[p].rolls[i].enabled)
-          players[p].disabled += 1;
+
         players[p].dice += isDie(players[p].rolls[i].result);
       }
 
@@ -426,17 +206,15 @@
     }
 
     for (var i=1; i<= 3; i++) {
-      $("#p" + i + "en").html(htmlForDie('Neutral', neutralDie, i));
-      $("#p" + i + "eo").html(htmlForDie('Offensive', offenseDie, i));
-      $("#p" + i + "ed").html(htmlForDie('Defensive', defenseDie, i));
-      $("#p" + i + "eh").html(htmlForDie('Power', powerDie, i));
-      $("#p" + i + "em").html(htmlForDie('Maneuver', maneuverDie, i));
-      $("#p" + i + "ew").html(htmlForDie('Wound', woundDie, i));
-      $("#p" + i + "ef").html(htmlForDie('Fatigue', fatigueDie, i));
+      $("#p" + i + "en").html(htmlForDie('Neutral', NEUTRAL_DIE, i));
+      $("#p" + i + "eo").html(htmlForDie('Offensive', OFFENSE_DIE, i));
+      $("#p" + i + "ed").html(htmlForDie('Defensive', DEFENSE_DIE, i));
+      $("#p" + i + "ew").html(htmlForDie('Wound', WOUND_DIE, i));
+      $("#p" + i + "ef").html(htmlForDie('Fatigue', FATIGUE_DIE, i));
     }
-    
+
     $('#p1roll').click(p1roll);
-   
+
     $('#p1rolls').on('click', 'div', function() {
       var i = parseInt($(this).data('roll'));
       if (!players[0].rolls[i].isBotch && !players[0].rolls[i].isDrop && players[0].rolls[i].result != '') {
