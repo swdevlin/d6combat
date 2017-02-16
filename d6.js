@@ -3,9 +3,9 @@ var fs = require('fs');
 
 var neutralDie =  [combat.BOTCH, combat.BLOCK, combat.BLOCK, combat.STRIKE, combat.STRIKE, combat.NEUTRAL_CRIT];
 var offenseDie =  [combat.BOTCH, combat.BLANK, combat.BLANK, combat.STRIKE, combat.STRIKE, combat.STRIKE_CRIT];
-var defenseDie =  [combat.BOTCH, combat.BLOCK, combat.BLOCK, combat.BLANK, combat.BLANK, combat.BLOCK_CRIT];
-var woundDie =    [combat.BOTCH, combat.DROP, combat.BLANK, combat.BLANK, combat.BLANK, combat.BLANK];
-var fatigueDie =  [combat.DROP, combat.DROP, combat.BLANK, combat.BLANK, combat.BLANK, combat.BLANK];
+var defenseDie =  [combat.BOTCH, combat.BLOCK, combat.BLOCK, combat.BLANK,  combat.BLANK,  combat.BLOCK_CRIT];
+var woundDie =    [combat.BOTCH, combat.DROP,  combat.BLANK, combat.BLANK,  combat.BLANK,  combat.BLANK];
+var fatigueDie =  [combat.DROP,  combat.DROP,  combat.BLANK, combat.BLANK,  combat.BLANK,  combat.BLANK];
 
 var dice = [];
 var diceId = '';
@@ -32,6 +32,6 @@ console.log("Crit %," + combat.critPercent(netResults));
 console.log("Total permutations," + combat.totalPermutations(netResults));
 var s = '';
 if (dump)
-  Object.keys(netResults).sort().forEach(function(v,i) {
+  Object.keys(netResults).sort().forEach(function(v, i) {
     console.log("'" + v + "'," + netResults[v]);
   });

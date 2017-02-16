@@ -22,13 +22,12 @@
   "devDependencies": {
     "istanbul": "^0.4.5",
     "jasmine": "^2.5.3",
+    "karma": "^1.4.1",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-coverage": "^1.1.1",
+    "karma-phantomjs-launcher": "^1.0.2",
     "mocha": "^3.2.0",
     "nyc": "^10.1.2",
     "travis-cov": "^0.2.5"
-  },
-  "config": {
-    "travis-cov": {
-      "threshold": 70
-    }
   }
 }
